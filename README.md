@@ -1,12 +1,18 @@
-# React + Vite
+# Jammming
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Project purpose
+This project is part of a learning path on Codecademy.com.  
+The purpose of this project is to further develop and demonstrate some of the skills I have learned so far in this course.
 
-Currently, two official plugins are available:
+## Technologies used
+* React
+* HTML
+* CSS
+* JavaScript
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## Expanding the ESLint configuration
+## Future work
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+#### yes the extra m in jammming is intentional :-)
+
