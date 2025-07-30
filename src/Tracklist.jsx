@@ -1,12 +1,13 @@
 import React from "react";
 import Track from "./Track";
+import "./Tracklist.css";
 
 function Tracklist({ trackList }) {
 
     return (
-        <div>
+        <div className="tracklist-container">
             {trackList.map((track, index) => {
-                return <div><Track id={track.id} name={track.name} artist={track.artist} album={track.album} key={index} /></div>;
+                return <Track id={track.id} name={track.name} artist={track.artist} album={track.album} key={index} />;
             })}
         </div>
     );

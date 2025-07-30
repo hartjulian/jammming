@@ -6,9 +6,11 @@ import './App.css'
 
 function App() {
   const [searchResults, setSearchResults] = useState([]);
+  const [playlistTrackList, setPlaylistTrackList] = useState([]);
 
   const handleSearchResults = (results) => {
     setSearchResults(results);
+    setPlaylistTrackList((prev) => [...prev, results[0]]);
   };
 
   return (
@@ -17,10 +19,9 @@ function App() {
       <SearchBar onSearch={handleSearchResults} />
       <div className="content-container">
         <SearchResults trackList={searchResults} />
-        <Playlist />
+        <Playlist trackList={playlistTrackList} />
       </div>
     </div>
-    // <div>SearchButton</div>
   )
 }
 

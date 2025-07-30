@@ -1,11 +1,11 @@
 import React from "react";
+import "./Track.css"
 
-function Track( {id, name, album, artist} ) {
+function Track({ id, name, album, artist }) {
     return (
-        <div>
-        <p>{name}</p>
-        <p>{artist}</p>
-        <p>{album}</p>
+        <div className="track-info">
+            <h3>{name}</h3>
+            <p>{artist} | {album}</p>
         </div>
     );
 }
