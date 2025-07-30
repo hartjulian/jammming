@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import "./SearchBar.css";
 
 const searchResults = [
     {
@@ -37,8 +38,8 @@ function SearchBar({ onSearch }) {
     return (
         <div>
             <form onSubmit={handleSearch}>
-                <input id="searchBar" name="searchBar" value={searchString} onChange={handleUserInput} />
-                <button type="submit">Search</button>
+                <input className="search-bar" name="searchBar" value={searchString} onChange={handleUserInput} />
+                <button className="search-button" type="submit">Search for songs, albums or artists</button>
             </form>
         </div>
     );

@@ -4,3 +4,15 @@
     width: 60%;
     align-items: center;
 }
+
+.playlist-name {
+    font-size: 1.5em;
+    padding: 0;
+    margin: 0.87em;
+    width: 60%;
+}
+
+.save-to-spotify {
+    background-color: green;
+    margin-top: 1em;
+}

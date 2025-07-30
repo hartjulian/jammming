@@ -10,7 +10,18 @@ function App() {
 
   const handleSearchResults = (results) => {
     setSearchResults(results);
-    setPlaylistTrackList((prev) => [...prev, results[0]]);
+  };
+
+  const addToPlaylist = (track) => {
+    if (!playlistTrackList.includes(track)) {
+      setPlaylistTrackList((prev) => [...prev, track]);
+    };
+  };
+
+  const removeFromPlaylist = (track) => {
+    if (playlistTrackList.includes(track)) {
+      setPlaylistTrackList((prev) => prev.filter((item) => item !== track));
+    };
   };
 
   return (
@@ -18,8 +29,8 @@ function App() {
       <h1>Jammming</h1>
       <SearchBar onSearch={handleSearchResults} />
       <div className="content-container">
-        <SearchResults trackList={searchResults} />
-        <Playlist trackList={playlistTrackList} />
+        <SearchResults trackList={searchResults} onClick={addToPlaylist} />
+        <Playlist trackList={playlistTrackList} onClick={removeFromPlaylist} />
       </div>
     </div>
   )

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Tracklist from "./Tracklist";
 import "./Playlist.css";
 
-function Playlist( {trackList} ) {
+function Playlist({ trackList, onClick }) {
 
 
     const [playlistName, setPlaylistName] = useState("New Playlist");
@@ -12,10 +12,9 @@ function Playlist( {trackList} ) {
 
     return (
         <div className="playlist-container">
-        <h2>Playlist</h2>
-        <input value={playlistName} onChange={handleUserInput} />
-        <Tracklist trackList={trackList} />
-        <button type="submit">Save to Spotify</button>
+            <input className="playlist-name" value={playlistName} onChange={handleUserInput} />
+            <Tracklist trackList={trackList} onClick={onClick} />
+            <button className="save-to-spotify" type="submit">Save to Spotify</button>
         </div>
     );
 }
