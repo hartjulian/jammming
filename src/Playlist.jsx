@@ -2,19 +2,17 @@ import React, { useState } from "react";
 import Tracklist from "./Tracklist";
 import "./Playlist.css";
 
-function Playlist({ trackList, onClick }) {
+function Playlist({ playlistName, trackList, onNameChange, onClick, onSave }) {
 
-
-    const [playlistName, setPlaylistName] = useState("New Playlist");
-    const handleUserInput = (e) => {
-        setPlaylistName(e.target.value);
+    const handleNameChange = (e) => {
+        onNameChange(e.target.value);
     };
 
     return (
         <div className="playlist-container">
-            <input className="playlist-name" value={playlistName} onChange={handleUserInput} />
-            <Tracklist trackList={trackList} onClick={onClick} />
-            <button className="save-to-spotify" type="submit">Save to Spotify</button>
+                <input className="playlist-name" value={playlistName} onChange={handleNameChange} />
+                <Tracklist trackList={trackList} onClick={onClick} />
+                <button className="save-to-spotify" onClick={onSave}>Save to Spotify</button>
         </div>
     );
 }
