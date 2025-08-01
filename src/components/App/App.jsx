@@ -1,16 +1,18 @@
 import { useState } from 'react';
-import Playlist from './Playlist';
-import SearchBar from './SearchBar';
-import SearchResults from './SearchResults';
+import Playlist from '../Playlist/Playlist';
+import SearchBar from '../SearchBar/SearchBar';
+import SearchResults from '../SearchResults/SearchResults';
 import './App.css'
-import searchResultsData from '../mock-data/MockSearchResults';
+import searchResultsData from '../../../mock-data/MockSearchResults';
+import Spotify from '../../util/Spotify';
 
 function App() {
   const [searchResults, setSearchResults] = useState([]);
   const [playlistTrackList, setPlaylistTrackList] = useState([]);
   const [playlistName, setPlaylistName] = useState("New Playlist");
 
-  const search = () => {
+  const search = (term) => {
+    // Spotify.search(term);
     setSearchResults(searchResultsData);
   };
 

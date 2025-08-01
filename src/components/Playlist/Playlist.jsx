@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Tracklist from "./Tracklist";
+import Tracklist from "../Tracklist/TrackList/";
 import "./Playlist.css";
 
 function Playlist({ playlistName, trackList, onNameChange, onClick, onSave }) {
