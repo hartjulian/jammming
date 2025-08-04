@@ -24,107 +24,108 @@ const currentToken = {
     }
 };
 
-// On page load, try to fetch auth code from current browser search URL
-const args = new URLSearchParams(window.location.search);
-const code = args.get('code');
-
-
-
-// // If we have a token, we're logged in, return the access token
-// if (currentToken.access_token) {
-//     return currentToken.access_token;
-// }
-
-// Otherwise we're not logged in, so render the login template
-const getUserAuth = async () => {
-    //  generate Code Verifier
-    const generateRandomString = (length) => {
-        const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        const values = crypto.getRandomValues(new Uint8Array(length));
-        return values.reduce((acc, x) => acc + possible[x % possible.length], "");
-    }
-    const codeVerifier = generateRandomString(64);
-
-    // generate Code Challenge to be used in user auth request
-    const sha256 = async (plain) => {
-        const encoder = new TextEncoder()
-        const data = encoder.encode(plain)
-        return window.crypto.subtle.digest('SHA-256', data)
-    }
-    const base64encode = (input) => {
-        return btoa(String.fromCharCode(...new Uint8Array(input)))
-            .replace(/=/g, '')
-            .replace(/\+/g, '-')
-            .replace(/\//g, '_');
-    }
-    const hashed = await sha256(codeVerifier)
-    const codeChallenge = base64encode(hashed);
-
-    // generate the user auth request
-    window.localStorage.setItem('code_verifier', codeVerifier);
-
-    const params = {
-        response_type: 'code',
-        client_id: clientId,
-        scope: scope,
-        code_challenge_method: 'S256',
-        code_challenge: codeChallenge,
-        redirect_uri: redirectUri,
-    }
-
-    authUrl.search = new URLSearchParams(params).toString();
-    window.location.href = authUrl.toString();
-}
-
-const getToken = async () => {
-    // stored in the previous step
-    let codeVerifier = window.localStorage.getItem('code_verifier');
-    const url = tokenEndpoint;
-    const payload = {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams({
-            client_id: clientId,
-            grant_type: 'authorization_code',
-            code,
-            redirect_uri: redirectUri,
-            code_verifier: codeVerifier,
-        }),
-    }
-
-    const body = await fetch(url, payload);
-    const response = await body.json();
-
-    localStorage.setItem('access_token', response.access_token);
-
-    return response;
-}
-
-
-// If we find a code, we're in a callback, do a token exchange
-if (code) {
-    const token = await getToken(code);
-    currentToken.save(token);
-
-    // Remove code from URL so we can refresh correctly.
-    const url = new URL(window.location.href);
-    url.searchParams.delete("code");
-
-    const updatedUrl = url.search ? url.href : url.href.replace('?', '');
-    window.history.replaceState({}, document.title, updatedUrl);
-}
-
-if (!currentToken.access_token) {
-
-    getUserAuth();
-}
-
-
 const Spotify = {
-    search(term) {
+    async getAccessToken() {
+        // is there a current access token??  If so just return it to calling method
+        if (currentToken.access_token) {
+            return currentToken.access_token;
+        } else {
+            //  are we in a callback?  If so, we need to request an access token
+            const urlParams = new URLSearchParams(window.location.search);
+            let code = urlParams.get('code');
+            if (code) {
+                const codeVerifier = localStorage.getItem('code_verifier');
 
+                const payload = {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        client_id: clientId,
+                        grant_type: 'authorization_code',
+                        code,
+                        redirect_uri: redirectUri,
+                        code_verifier: codeVerifier,
+                    }),
+                }
+
+                const body = await fetch(tokenEndpoint, payload);
+                const response = await body.json();
+
+                currentToken.save(response);
+                return currentToken.access_token;
+            } else {
+                //  not in a callback and we don't have an access token.  Generate user auth
+                //  Code verifier
+                const generateRandomString = (length) => {
+                    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+                    const values = crypto.getRandomValues(new Uint8Array(length));
+                    return values.reduce((acc, x) => acc + possible[x % possible.length], "");
+                }
+
+                const codeVerifier = generateRandomString(64);
+
+                //  Code challenge from generated code verifier
+                const sha256 = async (plain) => {
+                    const encoder = new TextEncoder()
+                    const data = encoder.encode(plain)
+                    return window.crypto.subtle.digest('SHA-256', data)
+                }
+                //  function to base64 encode the hashed code verifier
+                const base64encode = (input) => {
+                    return btoa(String.fromCharCode(...new Uint8Array(input)))
+                        .replace(/=/g, '')
+                        .replace(/\+/g, '-')
+                        .replace(/\//g, '_');
+                }
+                const hashed = await sha256(codeVerifier)
+                const codeChallenge = base64encode(hashed);
+
+                //  Request user authorisation
+                //  store code verifier generated in the previous step
+                window.localStorage.setItem('code_verifier', codeVerifier);
+
+                const params = {
+                    response_type: 'code',
+                    client_id: clientId,
+                    scope,
+                    code_challenge_method: 'S256',
+                    code_challenge: codeChallenge,
+                    redirect_uri: redirectUri,
+                }
+
+                authUrl.search = new URLSearchParams(params).toString();
+                window.location.href = authUrl.toString();
+            };
+        }
+    },
+    async search(term) {
+        if (term) {
+            const accessToken = await this.getAccessToken();
+            alert(accessToken);
+            const searchUrl = 'https://api.spotify.com/v1/search';
+            const payload = {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`
+                }
+            };
+            return fetch(`${searchUrl}?q=${term}&type=track`, payload).then(response => {
+                return response.json();
+            }).then(jsonResponse => {
+                if (!jsonResponse.tracks) {
+                    return [];
+                }
+                return jsonResponse.tracks.items.map(track => ({
+                    id: track.id,
+                    name: track.name,
+                    artist: track.artists[0].name,
+                    album: track.album.name,
+                    uri: track.uri
+                }));
+            });
+        }
+        return [];
     }
 };
 

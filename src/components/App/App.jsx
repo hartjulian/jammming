@@ -11,9 +11,9 @@ function App() {
   const [playlistTrackList, setPlaylistTrackList] = useState([]);
   const [playlistName, setPlaylistName] = useState("New Playlist");
 
-  const search = (term) => {
-    // Spotify.search(term);
-    setSearchResults(searchResultsData);
+  const search = async (term) => {
+    const resultsData = await Spotify.search(term);
+    setSearchResults(resultsData);
   };
 
   const updatePlaylistName = (playlistName) => {
