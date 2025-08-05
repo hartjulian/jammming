@@ -28,6 +28,25 @@ const Spotify = {
     async getAccessToken() {
         // is there a current access token??  If so just return it to calling method
         if (currentToken.access_token) {
+            let now = new Date();
+            if (currentToken.expires < (Date(now.getTime()))) {
+                // current token has expired.  get Refresh Token.
+                const payload = {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        client_id: clientId,
+                        grant_type: 'refresh_token',
+                        refresh_token: currentToken.refresh_token,
+                    }),
+                }
+
+                const body = await fetch(tokenEndpoint, payload);
+                const response = await body.json();
+                currentToken.save(response);
+            }
             return currentToken.access_token;
         } else {
             //  are we in a callback?  If so, we need to request an access token
@@ -52,8 +71,13 @@ const Spotify = {
 
                 const body = await fetch(tokenEndpoint, payload);
                 const response = await body.json();
-
                 currentToken.save(response);
+
+                //  tidy up search params.  remove code query param so that we can refresh
+                let currentUrl = new URL(window.location.href);
+                currentUrl.searchParams.delete('code');
+                window.location.href=currentUrl.href;                    
+
                 return currentToken.access_token;
             } else {
                 //  not in a callback and we don't have an access token.  Generate user auth
@@ -103,7 +127,6 @@ const Spotify = {
     async search(term) {
         if (term) {
             const accessToken = await this.getAccessToken();
-            alert(accessToken);
             const searchUrl = 'https://api.spotify.com/v1/search';
             const payload = {
                 headers: {
@@ -121,7 +144,8 @@ const Spotify = {
                     name: track.name,
                     artist: track.artists[0].name,
                     album: track.album.name,
-                    uri: track.uri
+                    uri: track.uri,
+                    albumArtwork: track.album.images[2].url,
                 }));
             });
         }
