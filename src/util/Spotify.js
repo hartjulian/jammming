@@ -76,7 +76,7 @@ const Spotify = {
                 //  tidy up search params.  remove code query param so that we can refresh
                 let currentUrl = new URL(window.location.href);
                 currentUrl.searchParams.delete('code');
-                window.location.href=currentUrl.href;                    
+                window.location.href = currentUrl.href;
 
                 return currentToken.access_token;
             } else {
@@ -145,11 +145,33 @@ const Spotify = {
                     artist: track.artists[0].name,
                     album: track.album.name,
                     uri: track.uri,
-                    albumArtwork: track.album.images[2].url,
+                    albumArtwork: track.album.images[0].url,
                 }));
             });
         }
         return [];
+    },
+    async savePlaylist(playlistUris, playlistName) {
+        if (playlistUris[0] && playlistName) {
+            const accessToken = await this.getAccessToken();
+            // get current users profile (user ID)
+            const userProfileUrl = 'https://api.spotify.com/v1/me';
+            const payload = {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`
+                }
+            };
+            const userId = await fetch(userProfileUrl, payload).then(response => {
+                return response.json();
+            }).then(jsonResponse => {
+                return jsonResponse.id;
+            });
+            // create playlist 
+            // add tracks to playlist
+
+            return 1;
+        }
+        return 0;
     }
 };
 

@@ -2,4 +2,32 @@
     background-color: gray;
     border-radius: 0.5rem;
     /* width: 80%; */
+    display: flex;
+    margin: 2rem 0;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+}
+
+.album-image {
+    width: 20%;
+    margin: 1rem;
+}
+
+.album-image img {
+    width: 100%;
+}
+
+.track-detail {
+    width: 60%;
+}
+
+.right-container {
+    width: 20%;
+    margin: 1rem;    
+}
+
+.right-container button {
+    background-color: green;
+    font-weight: bold;
 }

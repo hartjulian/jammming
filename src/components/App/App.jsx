@@ -9,7 +9,7 @@ import Spotify from '../../util/Spotify';
 function App() {
   const [searchResults, setSearchResults] = useState([]);
   const [playlistTrackList, setPlaylistTrackList] = useState([]);
-  const [playlistName, setPlaylistName] = useState("New Playlist");
+  const [playlistName, setPlaylistName] = useState("");
   const [loggedIn, setLoggedIn] = useState(false);
 
   if (!loggedIn) {
@@ -38,10 +38,13 @@ function App() {
     };
   };
 
-  const savePlaylistToSpotify = () => {
-    // const playlistUris = playlistTrackList.map((track) => track.uri);
-    setPlaylistName("New Playlist");
+  const savePlaylistToSpotify = async () => {
+    const playlistUris = playlistTrackList.map((track) => track.uri);
+    const result = await Spotify.savePlaylist(playlistUris, playlistName);
+    if (result) {
+    setPlaylistName("");
     setPlaylistTrackList([]);
+    };
   };
 
   return (
@@ -49,8 +52,8 @@ function App() {
       <h1>Jammming</h1>
       <SearchBar onSearch={search}  />
       <div className="content-container">
-        <SearchResults trackList={searchResults} onClick={addToPlaylist} />
-        <Playlist playlistName={playlistName} trackList={playlistTrackList} onNameChange={updatePlaylistName} onClick={removeFromPlaylist} onSave={savePlaylistToSpotify}/>
+        <SearchResults trackList={searchResults} onClick={addToPlaylist} action="add" />
+        <Playlist playlistName={playlistName} trackList={playlistTrackList} onNameChange={updatePlaylistName} onClick={removeFromPlaylist} onSave={savePlaylistToSpotify} action="remove" />
       </div>
     </div>
   )
