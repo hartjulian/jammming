@@ -1,7 +1,7 @@
 const clientId = '23a385f21eaf4480bbeae78519d9a156';
 const redirectUri = 'http://127.0.0.1:5173';
 
-const scope = 'user-read-private user-read-email';
+const scope = 'user-read-private user-read-email playlist-modify-public';
 const authUrl = new URL("https://accounts.spotify.com/authorize");
 const tokenEndpoint = new URL("https://accounts.spotify.com/api/token");
 
@@ -26,10 +26,11 @@ const currentToken = {
 
 const Spotify = {
     async getAccessToken() {
-        // is there a current access token??  If so just return it to calling method
+        // is there a current access token??  If so just return it to calling method, unless it's expired
         if (currentToken.access_token) {
             let now = new Date();
-            if (currentToken.expires < (Date(now.getTime()))) {
+            let currentTokenExpiry = new Date(currentToken.expires);
+            if (currentTokenExpiry < now) {
                 // current token has expired.  get Refresh Token.
                 const payload = {
                     method: 'POST',
@@ -156,17 +157,37 @@ const Spotify = {
             const accessToken = await this.getAccessToken();
             // get current users profile (user ID)
             const userProfileUrl = 'https://api.spotify.com/v1/me';
-            const payload = {
+            const userProfilePayload = {
                 headers: {
                     Authorization: `Bearer ${accessToken}`
                 }
             };
-            const userId = await fetch(userProfileUrl, payload).then(response => {
+            const userId = await fetch(userProfileUrl, userProfilePayload).then(response => {
                 return response.json();
             }).then(jsonResponse => {
                 return jsonResponse.id;
             });
             // create playlist 
+            const createPlaylistUrl = `https://api.spotify.com/v1/users/${userId}/playlists`;
+            const createPlaylistBody = {
+                name: playlistName,
+                description: ''
+            };
+            const createPlaylistPayload = {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json; charset=UTF-8'
+                },
+                body: JSON.stringify(createPlaylistBody)
+            };
+            console.log(createPlaylistPayload);
+            const playlistID = await fetch(createPlaylistUrl, createPlaylistPayload).then(response => {
+                return response.json();
+            }).then(jsonResponse => {
+                return jsonResponse.id;
+            })
+            console.log(playlistID);
             // add tracks to playlist
 
             return 1;
