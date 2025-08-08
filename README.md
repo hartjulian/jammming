@@ -11,8 +11,12 @@ The purpose of this project is to further develop and demonstrate some of the sk
 * JavaScript
 
 ## Features
+* Search for songs, albums or artists, and create a custom playlist saved to your own spotify account.
 
 ## Future work
+* Styling changes.
+* Implement pagination/scrolling for search results.
+* Playlist management to allow users to edit existing playlists, instead of only creating new playlists.
 
 #### yes the extra m in jammming is intentional :-)
 
