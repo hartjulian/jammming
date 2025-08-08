@@ -72,7 +72,7 @@ const Spotify = {
 
                 const body = await fetch(tokenEndpoint, payload);
                 const response = await body.json();
-                currentToken.save(response);
+                if (response.access_token) currentToken.save(response);
 
                 //  tidy up search params.  remove code query param so that we can refresh
                 let currentUrl = new URL(window.location.href);
@@ -177,19 +177,29 @@ const Spotify = {
                 method: "POST",
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
-                    'Content-Type': 'application/json; charset=UTF-8'
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(createPlaylistBody)
             };
-            console.log(createPlaylistPayload);
             const playlistID = await fetch(createPlaylistUrl, createPlaylistPayload).then(response => {
                 return response.json();
             }).then(jsonResponse => {
                 return jsonResponse.id;
             })
-            console.log(playlistID);
             // add tracks to playlist
-
+            const addToPlaylistUrl = `https://api.spotify.com/v1/playlists/${playlistID}/tracks`;
+            const addToPlaylistBody = {
+                uris: playlistUris
+            };
+            const addToPlaylistPayload = {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(addToPlaylistBody)
+            };
+            await fetch(addToPlaylistUrl, addToPlaylistPayload)
             return 1;
         }
         return 0;

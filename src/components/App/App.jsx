@@ -7,19 +7,26 @@ import './App.css'
 import Spotify from '../../util/Spotify';
 
 function App() {
+  const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [playlistTrackList, setPlaylistTrackList] = useState([]);
   const [playlistName, setPlaylistName] = useState("");
-  const [loggedIn, setLoggedIn] = useState(false);
+  // const [loggedIn, setLoggedIn] = useState(false);
 
-  if (!loggedIn) {
-    Spotify.getAccessToken();
-    setLoggedIn(true);
-  }
+  // if (!loggedIn) {
+    const response = Spotify.getAccessToken();
+  //     if (response && response != "undefined") {
+  //       setLoggedIn(true);
+  //     };
+  //   };
 
   const search = async (term) => {
     const resultsData = await Spotify.search(term);
     setSearchResults(resultsData);
+  };
+
+  const updateSearchTerm = (searchTerm) => {
+    setSearchTerm(searchTerm);
   };
 
   const updatePlaylistName = (playlistName) => {
@@ -42,15 +49,17 @@ function App() {
     const playlistUris = playlistTrackList.map((track) => track.uri);
     const result = await Spotify.savePlaylist(playlistUris, playlistName);
     if (result) {
-    setPlaylistName("");
-    setPlaylistTrackList([]);
+      setSearchTerm("");
+      setSearchResults([]);
+      setPlaylistName("");
+      setPlaylistTrackList([]);
     };
   };
 
   return (
     <div>
       <h1>Jammming</h1>
-      <SearchBar onSearch={search}  />
+      <SearchBar searchTerm={searchTerm} onChange={updateSearchTerm} onSearch={search}  />
       <div className="content-container">
         <SearchResults trackList={searchResults} onClick={addToPlaylist} action="add" />
         <Playlist playlistName={playlistName} trackList={playlistTrackList} onNameChange={updatePlaylistName} onClick={removeFromPlaylist} onSave={savePlaylistToSpotify} action="remove" />
