@@ -1,4 +1,3 @@
-import React from "react";
 import "./Track.css"
 
 function Track({ track, onClick, action }) {

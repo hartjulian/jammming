@@ -27,7 +27,7 @@ const currentToken = {
 const Spotify = {
     async getAccessToken() {
         // is there a current access token??  If so just return it to calling method, unless it's expired
-        if (currentToken.access_token) {
+        if (currentToken.access_token && currentToken.access_token != "undefined") {
             let now = new Date();
             let currentTokenExpiry = new Date(currentToken.expires);
             if (currentTokenExpiry < now) {
@@ -125,6 +125,7 @@ const Spotify = {
             };
         }
     },
+
     async search(term) {
         if (term) {
             const accessToken = await this.getAccessToken();
@@ -152,6 +153,7 @@ const Spotify = {
         }
         return [];
     },
+
     async savePlaylist(playlistUris, playlistName) {
         if (playlistUris[0] && playlistName) {
             const accessToken = await this.getAccessToken();

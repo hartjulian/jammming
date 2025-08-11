@@ -11,15 +11,9 @@ function App() {
   const [searchResults, setSearchResults] = useState([]);
   const [playlistTrackList, setPlaylistTrackList] = useState([]);
   const [playlistName, setPlaylistName] = useState("");
-  // const [loggedIn, setLoggedIn] = useState(false);
-
-  // if (!loggedIn) {
-    const response = Spotify.getAccessToken();
-  //     if (response && response != "undefined") {
-  //       setLoggedIn(true);
-  //     };
-  //   };
-
+  
+  Spotify.getAccessToken();
+  
   const search = async (term) => {
     const resultsData = await Spotify.search(term);
     setSearchResults(resultsData);

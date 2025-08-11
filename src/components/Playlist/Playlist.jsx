@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import Tracklist from "../Tracklist/TrackList/";
 import "./Playlist.css";
 
