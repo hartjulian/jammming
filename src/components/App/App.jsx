@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Playlist from '../Playlist/Playlist';
 import SearchBar from '../SearchBar/SearchBar';
 import SearchResults from '../SearchResults/SearchResults';
@@ -11,12 +11,44 @@ function App() {
   const [searchResults, setSearchResults] = useState([]);
   const [playlistTrackList, setPlaylistTrackList] = useState([]);
   const [playlistName, setPlaylistName] = useState("");
-  
-  Spotify.getAccessToken();
+  const [isFetching, setIsFetching] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+
+  useEffect(() => {
+      window.addEventListener('scroll', handleScroll);
+      return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    if (!isFetching) return;
+    fetchMoreTracks();
+  }, [isFetching]);
+
+  useEffect(() => {
+    if (isLoggedIn || isLoggingIn) return;
+    getAccessToken();
+  }, [isLoggedIn]);
+
+  const getAccessToken = async () => {
+    setIsLoggingIn(true);
+    const accessToken = await Spotify.getAccessToken();
+    if (accessToken) setIsLoggedIn(true);
+    setIsLoggingIn(false);
+  };
   
   const search = async (term) => {
+    Spotify.resetSearch();
     const resultsData = await Spotify.search(term);
     setSearchResults(resultsData);
+  };
+
+  const fetchMoreTracks = async () => {
+    const resultsData = await Spotify.search();
+    resultsData.forEach(track => {
+        setSearchResults((prev) => [...prev, track]);
+    });
+    setIsFetching(false);    
   };
 
   const updateSearchTerm = (searchTerm) => {
@@ -47,8 +79,14 @@ function App() {
       setSearchResults([]);
       setPlaylistName("");
       setPlaylistTrackList([]);
+      Spotify.resetSearch();
     };
   };
+
+    function handleScroll() {        
+        if (window.innerHeight + document.documentElement.scrollTop + 1 < document.documentElement.offsetHeight) return;
+        setIsFetching(true);
+    };
 
   return (
     <div>

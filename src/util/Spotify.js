@@ -1,9 +1,13 @@
+import { captureOwnerStack } from "react";
+
 const clientId = '23a385f21eaf4480bbeae78519d9a156';
 const redirectUri = 'http://127.0.0.1:5173';
 
 const scope = 'user-read-private user-read-email playlist-modify-public';
 const authUrl = new URL("https://accounts.spotify.com/authorize");
 const tokenEndpoint = new URL("https://accounts.spotify.com/api/token");
+
+let nextSearchUrl = '';
 
 // Data structure that manages the current active token, caching it in localStorage
 const currentToken = {
@@ -45,8 +49,10 @@ const Spotify = {
                 }
 
                 const body = await fetch(tokenEndpoint, payload);
-                const response = await body.json();
-                currentToken.save(response);
+                if (body.status === 200) {
+                    const response = await body.json();
+                    currentToken.save(response);
+                } else return;
             }
             return currentToken.access_token;
         } else {
@@ -71,8 +77,10 @@ const Spotify = {
                 }
 
                 const body = await fetch(tokenEndpoint, payload);
-                const response = await body.json();
-                if (response.access_token) currentToken.save(response);
+                if (body.status === 200) {
+                    const response = await body.json();
+                    currentToken.save(response);
+                } else return;
 
                 //  tidy up search params.  remove code query param so that we can refresh
                 let currentUrl = new URL(window.location.href);
@@ -127,20 +135,24 @@ const Spotify = {
     },
 
     async search(term) {
-        if (term) {
+        if (term || (nextSearchUrl != "" && nextSearchUrl !== null)) {
             const accessToken = await this.getAccessToken();
-            const searchUrl = 'https://api.spotify.com/v1/search';
+            let searchUrl = `https://api.spotify.com/v1/search?q=${term}&type=track`;
+            if (nextSearchUrl != "" && nextSearchUrl !== null) {
+                searchUrl = nextSearchUrl;
+            }
             const payload = {
                 headers: {
                     Authorization: `Bearer ${accessToken}`
                 }
             };
-            return fetch(`${searchUrl}?q=${term}&type=track`, payload).then(response => {
+            return fetch(searchUrl, payload).then(response => {
                 return response.json();
             }).then(jsonResponse => {
                 if (!jsonResponse.tracks) {
                     return [];
                 }
+                nextSearchUrl = jsonResponse.tracks.next;
                 return jsonResponse.tracks.items.map(track => ({
                     id: track.id,
                     name: track.name,
@@ -153,6 +165,12 @@ const Spotify = {
         }
         return [];
     },
+
+    async fetchMoreTracks() {
+        return this.search();
+    },
+
+    resetSearch() {nextSearchUrl='';},
 
     async savePlaylist(playlistUris, playlistName) {
         if (playlistUris[0] && playlistName) {
