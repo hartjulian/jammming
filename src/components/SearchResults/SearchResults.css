@@ -4,3 +4,9 @@
     width: 60%;
     align-items: center;
 }
+
+@media only screen and (max-width:680px) {
+    .search-results-container {
+        width: 100%;
+    }
+}  

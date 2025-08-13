@@ -31,3 +31,15 @@
     background-color: green;
     font-weight: bold;
 }
+
+@media only screen and (max-width:1120px) {
+  .album-image {
+    display: none;
+  }
+}
+
+@media only screen and (max-width:680px) {
+  .track-info {
+    font-size: smaller;
+  }
+}

@@ -17,3 +17,9 @@
     background-color: green;
     margin-top: 1em;
 }
+
+@media only screen and (max-width:680px) {
+    .playlist-container {
+        width: 100%;
+    }
+}    

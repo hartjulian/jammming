@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import Playlist from '../Playlist/Playlist';
 import SearchBar from '../SearchBar/SearchBar';
 import SearchResults from '../SearchResults/SearchResults';
+import BackToTop from '../BackToTop/BackToTop';
 import './App.css'
 // import searchResultsData from '../../../mock-data/MockSearchResults';
 import Spotify from '../../util/Spotify';
@@ -16,6 +17,7 @@ function App() {
   const [moreResults, setMoreResults] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [showScrollToTop, setShowScrollToTop] = useState(false);
 
   useEffect(() => {
       window.addEventListener('scroll', handleScroll);
@@ -95,9 +97,17 @@ function App() {
     };
   };
 
-    function handleScroll() {        
+    const handleScroll = () => {
+        (window.pageYOffset > window.innerHeight) ? setShowScrollToTop(true) : setShowScrollToTop(false);
         if (window.innerHeight + document.documentElement.scrollTop + 1 < document.documentElement.offsetHeight) return;
         setIsFetching(true);
+    };
+
+    const backToTop = () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
     };
 
   return (
@@ -108,6 +118,7 @@ function App() {
         <SearchResults searchResultsString={searchResultsString} trackList={searchResults} onClick={addToPlaylist} action="add" isFetching={isFetching} moreResults={moreResults}/>
         <Playlist playlistName={playlistName} trackList={playlistTrackList} onNameChange={updatePlaylistName} onClick={removeFromPlaylist} onSave={savePlaylistToSpotify} action="remove" />
       </div>
+      {showScrollToTop && <BackToTop onClick={backToTop}/>}
     </div>
   )
 }
