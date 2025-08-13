@@ -9,9 +9,11 @@ import Spotify from '../../util/Spotify';
 function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+  const [searchResultsString, setSearchResultsString] = useState("Search Results");
   const [playlistTrackList, setPlaylistTrackList] = useState([]);
   const [playlistName, setPlaylistName] = useState("");
   const [isFetching, setIsFetching] = useState(false);
+  const [moreResults, setMoreResults] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
@@ -38,17 +40,23 @@ function App() {
   };
   
   const search = async (term) => {
+    if (!term) return;
     Spotify.resetSearch();
     const resultsData = await Spotify.search(term);
-    setSearchResults(resultsData);
+    setSearchResultsString(`Search Results for ${searchTerm}`);    
+    setSearchTerm("");
+    (resultsData.length > 0 ? setMoreResults(true) : setMoreResults(false));    
+    setSearchResults(resultsData);    
   };
 
   const fetchMoreTracks = async () => {
+    setIsFetching(true);
     const resultsData = await Spotify.search();
     resultsData.forEach(track => {
         setSearchResults((prev) => [...prev, track]);
     });
-    setIsFetching(false);    
+    setIsFetching(false);
+    (resultsData.length > 0 ? setMoreResults(true) : setMoreResults(false));
   };
 
   const updateSearchTerm = (searchTerm) => {
@@ -72,6 +80,10 @@ function App() {
   };
 
   const savePlaylistToSpotify = async () => {
+    if (!playlistName) {
+      alert("Enter a playlist name to save to Spotify.");
+      return;
+    }
     const playlistUris = playlistTrackList.map((track) => track.uri);
     const result = await Spotify.savePlaylist(playlistUris, playlistName);
     if (result) {
@@ -93,7 +105,7 @@ function App() {
       <h1>Jammming</h1>
       <SearchBar searchTerm={searchTerm} onChange={updateSearchTerm} onSearch={search}  />
       <div className="content-container">
-        <SearchResults trackList={searchResults} onClick={addToPlaylist} action="add" />
+        <SearchResults searchResultsString={searchResultsString} trackList={searchResults} onClick={addToPlaylist} action="add" isFetching={isFetching} moreResults={moreResults}/>
         <Playlist playlistName={playlistName} trackList={playlistTrackList} onNameChange={updatePlaylistName} onClick={removeFromPlaylist} onSave={savePlaylistToSpotify} action="remove" />
       </div>
     </div>
