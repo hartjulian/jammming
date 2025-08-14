@@ -93,6 +93,7 @@ function App() {
       setSearchResults([]);
       setPlaylistName("");
       setPlaylistTrackList([]);
+      setSearchResultsString("Search Results");
       Spotify.resetSearch();
     };
   };
