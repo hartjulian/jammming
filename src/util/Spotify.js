@@ -1,7 +1,8 @@
 import { captureOwnerStack } from "react";
 
 const clientId = '23a385f21eaf4480bbeae78519d9a156';
-const redirectUri = 'http://127.0.0.1:5173';
+const redirectUri = import.meta.env.VITE_REDIRECT_URI;
+
 
 const scope = 'user-read-private user-read-email playlist-modify-public';
 const authUrl = new URL("https://accounts.spotify.com/authorize");
