@@ -1,4 +1,4 @@
-import Tracklist from "../Tracklist/TrackList/";
+import Tracklist from "../TrackList/Tracklist";
 import "./Playlist.css";
 
 function Playlist({ playlistName, trackList, onNameChange, onClick, onSave, action }) {
