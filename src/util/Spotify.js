@@ -1,6 +1,6 @@
 import { captureOwnerStack } from "react";
 
-const clientId = '23a385f21eaf4480bbeae78519d9a156';
+const clientId = import.meta.env.VITE_CLIENT_ID;
 const redirectUri = import.meta.env.VITE_REDIRECT_URI;
 
 
@@ -133,6 +133,14 @@ const Spotify = {
                 window.location.href = authUrl.toString();
             };
         }
+    },
+
+    async logout() {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('code_verifier');
+        localStorage.removeItem('expires');
+        localStorage.removeItem('expires_in');
+        localStorage.removeItem('refresh_token');
     },
 
     async search(term) {

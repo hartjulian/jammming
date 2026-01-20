@@ -3,6 +3,8 @@ import Playlist from '../Playlist/Playlist';
 import SearchBar from '../SearchBar/SearchBar';
 import SearchResults from '../SearchResults/SearchResults';
 import BackToTop from '../BackToTop/BackToTop';
+import Logout from '../Logout/Logout';
+import Login from '../Login/Login';
 import './App.css'
 // import searchResultsData from '../../../mock-data/MockSearchResults';
 import Spotify from '../../util/Spotify';
@@ -39,6 +41,13 @@ function App() {
     const accessToken = await Spotify.getAccessToken();
     if (accessToken) setIsLoggedIn(true);
     setIsLoggingIn(false);
+  };
+
+
+
+  const logout = async () => {
+    await Spotify.logout();
+    setIsLoggedIn(false);
   };
   
   const search = async (term) => {
@@ -114,7 +123,9 @@ function App() {
   return (
     <div>
       <h1>Jammming</h1>
+      <Logout logout={logout} />
       <SearchBar searchTerm={searchTerm} onChange={updateSearchTerm} onSearch={search}  />
+      {/* {!isLoggedIn && <Login login={login} />} */}
       <div className="content-container">
         <SearchResults searchResultsString={searchResultsString} trackList={searchResults} onClick={addToPlaylist} action="add" isFetching={isFetching} moreResults={moreResults}/>
         <Playlist playlistName={playlistName} trackList={playlistTrackList} onNameChange={updatePlaylistName} onClick={removeFromPlaylist} onSave={savePlaylistToSpotify} action="remove" />
