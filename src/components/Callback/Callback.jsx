@@ -1,7 +1,19 @@
+import Spotify from '../../util/Spotify';
+import { useNavigate } from 'react-router';
+import { useEffect } from 'react';
+
+
 function Callback() {
-    return (
-        <h1>Hello World</h1>
-    );
+    const urlParams = new URLSearchParams(window.location.search);    
+    const navigate = useNavigate();
+
+    const authCode = urlParams.get('code')
+    localStorage.setItem('auth_code', authCode);
+    
+    useEffect(() => {
+        navigate('/');
+    }, [])
+
 };
 
 export default Callback
