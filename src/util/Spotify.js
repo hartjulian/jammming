@@ -104,7 +104,7 @@ const Spotify = {
                 if (body.status === 200) {
                     const response = await body.json();
                     currentToken.save(response);
-                } else return;
+                } else return false;
             }
             return true;
         } else {
@@ -146,7 +146,11 @@ const Spotify = {
 
     async search(term) {
         if (term || (nextSearchUrl != "" && nextSearchUrl !== null)) {
-            const accessToken = await this.getAccessToken();
+            if (!(await this.checkLogin())) {
+                window.alert("Something went wrong! Please log in again.");
+                this.login();
+            };
+            const accessToken = currentToken.access_token;
             let searchUrl = `https://api.spotify.com/v1/search?q=${term}&type=track`;
             if (nextSearchUrl != "" && nextSearchUrl !== null) {
                 searchUrl = nextSearchUrl;
@@ -184,7 +188,11 @@ const Spotify = {
 
     async savePlaylist(playlistUris, playlistName) {
         if (playlistUris[0] && playlistName) {
-            const accessToken = await this.getAccessToken();
+            if (!(await this.checkLogin())) {
+                window.alert("Something went wrong! Please log in again.");
+                this.login();
+            };
+            const accessToken = currentToken.access_token;
             // get current users profile (user ID)
             const userProfileUrl = 'https://api.spotify.com/v1/me';
             const userProfilePayload = {
