@@ -18,8 +18,16 @@ function App() {
   const [isFetching, setIsFetching] = useState(false);
   const [moreResults, setMoreResults] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [checkLogin, setCheckLogin] = useState(true);
   const [showScrollToTop, setShowScrollToTop] = useState(false);
+
+    // Check if user is already logged in, or in auth callback flow
+  useEffect(() => {
+    if (!isLoggedIn && checkLogin) {
+      checkLoginStatus();
+      setCheckLogin(false);
+    };
+  }, [checkLogin]);
 
   useEffect(() => {
       window.addEventListener('scroll', handleScroll);
@@ -31,23 +39,17 @@ function App() {
     fetchMoreTracks();
   }, [isFetching]);
 
-  useEffect(() => {
-    if (isLoggedIn || isLoggingIn) return;
-    getAccessToken();
-  }, [isLoggedIn]);
-
-  const getAccessToken = async () => {
-    setIsLoggingIn(true);
-    const accessToken = await Spotify.getAccessToken();
-    if (accessToken) setIsLoggedIn(true);
-    setIsLoggingIn(false);
+  const checkLoginStatus = async () => {
+    setIsLoggedIn(await Spotify.checkLogin());
   };
 
-
+  const login = () => {
+    Spotify.login();
+  }
 
   const logout = async () => {
     await Spotify.logout();
-    setIsLoggedIn(false);
+    checkLoginStatus();
   };
   
   const search = async (term) => {
@@ -123,12 +125,12 @@ function App() {
   return (
     <div>
       <h1>Jammming</h1>
-      <Logout logout={logout} />
-      <SearchBar searchTerm={searchTerm} onChange={updateSearchTerm} onSearch={search}  />
-      {/* {!isLoggedIn && <Login login={login} />} */}
+      {isLoggedIn && <Logout logout={logout} />}
+      {isLoggedIn && <SearchBar searchTerm={searchTerm} onChange={updateSearchTerm} onSearch={search}  />}
+      {!isLoggedIn && <Login login={login} />}
       <div className="content-container">
-        <SearchResults searchResultsString={searchResultsString} trackList={searchResults} onClick={addToPlaylist} action="add" isFetching={isFetching} moreResults={moreResults}/>
-        <Playlist playlistName={playlistName} trackList={playlistTrackList} onNameChange={updatePlaylistName} onClick={removeFromPlaylist} onSave={savePlaylistToSpotify} action="remove" />
+        {isLoggedIn && <SearchResults searchResultsString={searchResultsString} trackList={searchResults} onClick={addToPlaylist} action="add" isFetching={isFetching} moreResults={moreResults}/>}
+        {isLoggedIn && <Playlist playlistName={playlistName} trackList={playlistTrackList} onNameChange={updatePlaylistName} onClick={removeFromPlaylist} onSave={savePlaylistToSpotify} action="remove" />}
       </div>
       {showScrollToTop && <BackToTop onClick={backToTop}/>}
     </div>
