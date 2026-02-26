@@ -151,7 +151,7 @@ const Spotify = {
                 this.login();
             };
             const accessToken = currentToken.access_token;
-            let searchUrl = `https://api.spotify.com/v1/search?q=${term}&type=track`;
+            let searchUrl = `https://api.spotify.com/v1/search?q=${term}&type=track&limit=10`;
             if (nextSearchUrl != "" && nextSearchUrl !== null) {
                 searchUrl = nextSearchUrl;
             }
@@ -206,7 +206,7 @@ const Spotify = {
                 return jsonResponse.id;
             });
             // create playlist 
-            const createPlaylistUrl = `https://api.spotify.com/v1/users/${userId}/playlists`;
+            const createPlaylistUrl = `https://api.spotify.com/v1/me/playlists`;
             const createPlaylistBody = {
                 name: playlistName,
                 description: ''
@@ -225,7 +225,7 @@ const Spotify = {
                 return jsonResponse.id;
             })
             // add tracks to playlist
-            const addToPlaylistUrl = `https://api.spotify.com/v1/playlists/${playlistID}/tracks`;
+            const addToPlaylistUrl = `https://api.spotify.com/v1/playlists/${playlistID}/items`;
             const addToPlaylistBody = {
                 uris: playlistUris
             };
