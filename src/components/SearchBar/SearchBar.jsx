@@ -6,15 +6,18 @@ function SearchBar({ searchTerm, onChange, onSearch }) {
         onChange(e.target.value);
     };
 
-    const handleSearch = () => {
+    const handleSearch = (e) => {
+        e.preventDefault();
         onSearch(searchTerm);
     };
 
     return (
-        <div className="search-container">
-            <input className="search-bar" name="searchBar" value={searchTerm} onChange={handleStringChange} />
-            <button className="search-button" onClick={handleSearch}>Search for songs, albums or artists</button>
-        </div>
+        // <div className="search-container">
+            <form className="search-container" onSubmit={handleSearch}>
+                <input className="search-bar" name="searchBar" value={searchTerm} onChange={handleStringChange} />
+                <button className="search-button" type="submit">Search for songs, albums or artists</button>
+            </form>
+        // </div>
     );
 }
 
